@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitcoin Split Simulator Demo :: Thon-Da Nguyen Ph.D</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body { font-family: 'Arial', sans-serif; background-color: #f1f5f9; }
+        .btc-bg { background-color: #f7931a; }
+        .step-active { border-left: 8px solid #f7931a; background: #fff; }
+        .log-entry { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-slate-800"><i class="fa-brands fa-bitcoin text-orange-500"></i> BITCOIN SPLIT SIMULATOR (MÔ PHỎNG PHÂN TÁCH BITCOIN)</h1>
+            <p class="text-slate-500 mt-2 text-xl">Blockchain Technology - Thon-Da Nguyen Ph.D</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column: Simulation Steps -->
+            <div class="lg:col-span-2 space-y-6">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Step 1 -->
+                    <div id="step1" class="p-6 rounded-2xl shadow-sm border step-active">
+                        <h3 class="font-bold text-xl mb-2 text-orange-600"><span class="bg-orange-600 text-white px-2 py-1 rounded mr-2 text-sm">S1</span> Own Original BTC (Sở hữu BTC gốc)</h3>
+                        <p class="text-slate-600 mb-4 text-sm">Asset accumulation phase before the splitting event occurs on the blockchain. (Giai đoạn tích lũy tài sản trước khi sự kiện phân tách diễn ra trên chuỗi khối.)</p>
+                        <div class="flex gap-2">
+                            <button onclick="addBTC(1)" class="btc-bg text-white px-4 py-2 rounded-lg font-bold hover:opacity-90 transition-all shadow-md">Buy 1 BTC (Mua 1 BTC)</button>
+                            <button onclick="addBTC(5)" class="btc-bg text-white px-4 py-2 rounded-lg font-bold hover:opacity-90 transition-all shadow-md">Buy 5 BTC (Mua 5 BTC)</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div id="step2" class="p-6 rounded-2xl shadow-sm border bg-white opacity-50">
+                        <h3 class="font-bold text-xl mb-2 text-red-600"><span class="bg-red-600 text-white px-2 py-1 rounded mr-2 text-sm">S2</span> Trigger Hard Fork (Kích hoạt Hard Fork)</h3>
+                        <p class="text-slate-600 mb-4 text-sm">Protocol disagreement! A group of miners splits to create new rules. (Bất đồng về giao thức! Một nhóm thợ đào tách ra tạo quy tắc mới.)</p>
+                        <button id="forkBtn" onclick="triggerFork()" disabled class="bg-red-600 text-white px-6 py-2 rounded-lg font-bold disabled:bg-slate-300 shadow-md">Activate Snapshot (Kích hoạt Snapshot)</button>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div id="step3" class="p-6 rounded-2xl shadow-sm border bg-white opacity-50">
+                    <h3 class="font-bold text-xl mb-2 text-green-600"><span class="bg-green-600 text-white px-2 py-1 rounded mr-2 text-sm">S3</span> Claim Forked Asset (BCH) (Nhận tài sản phân tách - BCH)</h3>
+                    <p class="text-slate-600 mb-4 text-sm">Receive assets on the new chain based on ownership at the time of the Snapshot. (Nhận tài sản trên chuỗi mới dựa trên quyền sở hữu tại thời điểm Snapshot.)</p>
+                    <div class="flex flex-col sm:flex-row gap-4 items-center">
+                        <button id="claimBtn" onclick="claimBCH()" disabled class="bg-green-600 text-white px-6 py-2 rounded-lg font-bold disabled:bg-slate-300 shadow-md w-full sm:w-auto">Claim Free BCH (1:1) (Nhận BCH Miễn Phí (1:1))</button>
+                        <div id="snapshotInfo" class="hidden text-sm font-bold text-slate-500 italic bg-slate-100 p-2 rounded">
+                            Snapshot Balance (Số dư Snapshot): <span id="snapValue">0</span> BTC
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advanced Knowledge Section -->
+                <div class="bg-white p-8 rounded-3xl shadow-sm border">
+                    <div class="flex border-b mb-6 overflow-x-auto">
+                        <button onclick="switchTab('tab1')" id="btn-tab1" class="px-6 py-2 font-bold text-orange-600 border-b-4 border-orange-600 whitespace-nowrap">What is Hard Fork? (Hard Fork là gì?)</button>
+                        <button onclick="switchTab('tab2')" id="btn-tab2" class="px-6 py-2 font-bold text-slate-400 whitespace-nowrap">Snapshot Mechanism (Cơ chế Snapshot)</button>
+                        <button onclick="switchTab('tab3')" id="btn-tab3" class="px-6 py-2 font-bold text-slate-400 whitespace-nowrap">Hosting Guide (Hướng dẫn đưa lên Web)</button>
+                    </div>
+
+                    <div id="tab1" class="tab-content active space-y-4">
+                        <h4 class="text-xl font-bold text-slate-800">Understanding Hard Forks (Hiểu về Hard Forks)</h4>
+                        <p class="text-slate-600">A Hard Fork occurs when developers update the Bitcoin software with new rules that are <b>not backward-compatible</b>. This forces the network to split into two branches: (Hard Fork xảy ra khi các nhà phát triển cập nhật phần mềm Bitcoin với các quy tắc mới <b>không tương thích ngược</b>. Điều này buộc mạng lưới phải chia thành hai nhánh:)</p>
+                        <ul class="list-disc pl-5 text-slate-600 space-y-2 text-sm">
+                            <li><b>Legacy Chain (Chuỗi cũ):</b> Continues running old rules (Bitcoin - BTC). (Tiếp tục chạy quy tắc cũ.)</li>
+                            <li><b>New Chain (Chuỗi mới):</b> Runs new rules (e.g., Bitcoin Cash - BCH, with larger block sizes). (Chạy quy tắc mới, ví dụ: kích thước khối lớn hơn.)</li>
+                        </ul>
+                        <div class="bg-orange-50 p-4 rounded-xl border border-orange-100">
+                            <p class="text-sm italic text-orange-800 font-bold">Real-world case: On Aug 1, 2017, Bitcoin Cash split due to scaling debates. (Ví dụ thực tế: Ngày 01/08/2017, Bitcoin Cash tách ra vì tranh cãi về việc mở rộng mạng lưới.)</p>
+                        </div>
+                    </div>
+
+                    <div id="tab2" class="tab-content space-y-4">
+                        <h4 class="text-xl font-bold text-slate-800">Snapshot & Ownership Rights (Snapshot & Quyền sở hữu)</h4>
+                        <p class="text-slate-600">A Snapshot is a record of the state of all wallet addresses at a specific Block Height. (Snapshot là bản ghi lại trạng thái của tất cả các địa chỉ ví tại một số thứ tự khối nhất định.)</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="border p-4 rounded-xl">
+                                <h5 class="font-bold text-slate-700">Before Snapshot (Trước Snapshot)</h5>
+                                <p class="text-sm text-slate-500">Every BTC you hold is eligible to receive the new coin. (Mọi BTC bạn nắm giữ đều đủ điều kiện để nhận đồng coin mới.)</p>
+                            </div>
+                            <div class="border p-4 rounded-xl bg-red-50">
+                                <h5 class="font-bold text-red-700">After Snapshot (Sau Snapshot)</h5>
+                                <p class="text-sm text-red-500">New BTC purchases will NOT be counted for claiming the new coin. (Các giao dịch mua BTC mới sẽ KHÔNG được tính để nhận coin mới.)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="tab3" class="tab-content space-y-4">
+                        <h4 class="text-xl font-bold text-slate-800">Free Hosting Solutions (Giải pháp Lưu trữ Miễn phí)</h4>
+                        <p class="text-slate-600 text-sm">You can use this HTML code to create a practice website for Users using these services: (Bạn có thể dùng đoạn mã HTML này để tạo website thực hành cho User bằng các dịch vụ sau:)</p>
+                        <div class="space-y-3">
+                            <div class="flex items-start gap-3 text-sm">
+                                <div class="bg-black text-white p-2 rounded text-xs font-bold">1</div>
+                                <p><b>GitHub Pages:</b> Create a repo, upload this file as <code class="bg-slate-100 px-1 rounded">index.html</code>, and enable Pages in settings. (Tạo repo, tải tệp này lên với tên index.html và bật Pages trong cài đặt.)</p>
+                            </div>
+                            <div class="flex items-start gap-3 text-sm">
+                                <div class="bg-blue-600 text-white p-2 rounded text-xs font-bold">2</div>
+                                <p><b>Vercel / Netlify:</b> Drag and drop this file to their dashboard for a free <code class="text-blue-600">.vercel.app</code> link. (Kéo thả tệp này vào bảng điều khiển để nhận liên kết miễn phí.)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Balance & Log -->
+            <div class="space-y-6">
+                <!-- Balance Card -->
+                <div class="bg-slate-800 text-white p-8 rounded-3xl shadow-2xl border-4 border-slate-700">
+                    <h3 class="text-xl font-bold mb-6 border-b border-slate-700 pb-4">User Wallet (Ví User)</h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center bg-slate-700 p-4 rounded-xl">
+                            <span class="text-slate-400 font-bold">BTC:</span>
+                            <span id="balBTC" class="text-3xl font-bold text-orange-400">0</span>
+                        </div>
+                        <div class="flex justify-between items-center bg-slate-700 p-4 rounded-xl">
+                            <span class="text-slate-400 font-bold">BCH:</span>
+                            <span id="balBCH" class="text-3xl font-bold text-green-400">0</span>
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-slate-500 mt-4 italic text-center uppercase tracking-widest">Simulation Data - No Real Value (Dữ liệu giả lập - Không có giá trị thật)</p>
+                </div>
+
+                <!-- System Log -->
+                <div class="bg-white p-6 rounded-2xl border shadow-inner h-[380px] overflow-y-auto" id="log">
+                    <div class="flex justify-between items-center mb-3 border-b pb-2">
+                        <h4 class="font-bold text-slate-800">Blockchain Log (Nhật ký Blockchain)</h4>
+                        <span class="animate-pulse w-2 h-2 bg-green-500 rounded-full"></span>
+                    </div>
+                    <div class="text-[12px] text-slate-500 space-y-2 font-mono" id="logContent">
+                        <div class="log-entry opacity-50">• Awaiting user input... (Đang chờ lệnh từ người dùng...)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-6 py-3 rounded-full shadow-2xl hidden z-50 transition-all transform scale-90 opacity-0">
+        <span id="toastMsg" class="font-bold"></span>
+    </div>
+
+    <script>
+        let btc = 0;
+        let bch = 0;
+        let btcAtSnapshot = 0;
+        let hasForked = false;
+        let hasClaimed = false;
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').innerText = msg;
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.remove('scale-90', 'opacity-0');
+                toast.classList.add('scale-100', 'opacity-100');
+            }, 10);
+            setTimeout(() => {
+                toast.classList.add('scale-90', 'opacity-0');
+                setTimeout(() => toast.classList.add('hidden'), 300);
+            }, 3000);
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            
+            document.querySelectorAll('[id^="btn-tab"]').forEach(b => {
+                b.classList.remove('text-orange-600', 'border-orange-600');
+                b.classList.add('text-slate-400');
+            });
+            document.getElementById('btn-' + tabId).classList.add('text-orange-600', 'border-orange-600');
+            document.getElementById('btn-' + tabId).classList.remove('text-slate-400');
+        }
+
+        function addLog(msg, colorClass = "text-slate-500") {
+            const content = document.getElementById('logContent');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${colorClass} pb-1 border-b border-slate-50`;
+            entry.innerHTML = `<span class="opacity-40">[${new Date().toLocaleTimeString()}]</span> ${msg}`;
+            content.prepend(entry);
+        }
+
+        function addBTC(amount) {
+            if (hasForked) {
+                showToast("Buying BTC on the legacy chain! (Đang mua BTC trên chuỗi cũ!)");
+                addLog(`Warning: Already Forked! Buying ${amount} BTC now won't count for the BCH Snapshot. (Cảnh báo: Đã Fork rồi! Mua ${amount} BTC bây giờ sẽ không được tính vào Snapshot nhận BCH.)`, "text-red-500");
+                btc += amount;
+            } else {
+                btc += amount;
+                showToast(`Bought ${amount} BTC (Đã mua ${amount} BTC)`);
+                addLog(`Transaction Confirmed: +${amount} BTC. (Giao dịch xác nhận: +${amount} BTC.)`);
+                document.getElementById('forkBtn').disabled = false;
+                document.getElementById('step2').classList.remove('opacity-50');
+            }
+            updateUI();
+        }
+
+        function triggerFork() {
+            hasForked = true;
+            btcAtSnapshot = btc;
+            showToast("HARD FORK ACTIVATED! (HARD FORK ĐÃ KÍCH HOẠT!)");
+            addLog(`HARD FORK EVENT! Snapshot chốt tại block #478558. Balance recorded: ${btcAtSnapshot} BTC. (SỰ KIỆN HARD FORK! Snapshot chốt tại block #478558. Số dư ghi nhận: ${btcAtSnapshot} BTC.)`, "text-red-600 font-bold");
+            
+            document.getElementById('forkBtn').disabled = true;
+            document.getElementById('claimBtn').disabled = false;
+            document.getElementById('step3').classList.remove('opacity-50');
+            document.getElementById('step1').classList.add('opacity-50');
+            document.getElementById('snapshotInfo').classList.remove('hidden');
+            document.getElementById('snapValue').innerText = btcAtSnapshot;
+            updateUI();
+        }
+
+        function claimBCH() {
+            if (hasClaimed) return;
+            if (btcAtSnapshot === 0) {
+                showToast("No BTC held at Snapshot time! (Bạn không có BTC tại thời điểm Snapshot!)");
+                addLog("Error: Cannot claim BCH as Snapshot balance was 0. (Lỗi: Không thể nhận BCH vì số dư Snapshot bằng 0.)", "text-red-400");
+                return;
+            }
+            bch = btcAtSnapshot;
+            hasClaimed = true;
+            showToast("BCH claimed successfully! (Claim BCH thành công!)");
+            addLog(`New Chain Transaction: Received ${bch} free BCH. (Giao dịch chuỗi mới: Đã nhận ${bch} BCH miễn phí.)`, "text-green-600 font-bold");
+            document.getElementById('claimBtn').disabled = true;
+            document.getElementById('claimBtn').innerText = "Claimed (Đã nhận)";
+            updateUI();
+        }
+
+        function updateUI() {
+            document.getElementById('balBTC').innerText = btc;
+            document.getElementById('balBCH').innerText = bch;
+        }
+    </script>
+</body>
+</html>
